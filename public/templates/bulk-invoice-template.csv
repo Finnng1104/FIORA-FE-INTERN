@@ -1,0 +1,3 @@
+user_name,cus_name,tax_no,email,phone,order_no,cus_address
+John Doe,ABC Company,0123456789,contact@abc.com,0987654321,ORD001,"123 Main St, City"
+Jane Smith,XYZ Corp,9876543210,info@xyz.com,0123456789,ORD002,"456 Oak Ave, Town"
