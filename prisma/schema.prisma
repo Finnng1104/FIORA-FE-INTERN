@@ -10,20 +10,29 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String?
-  email     String    @unique
-  password  String?
-  image     String?
-  role      UserRole  @default(User)
-  accounts  Account[]
-  sessions  Session[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                                        String         @id @default(cuid())
+  name                                      String?
+  email                                     String         @unique
+  password                                  String?
+  image                                     String?
+  role                                      UserRole       @default(User)
+  createdAt                                 DateTime       @default(now())
+  updatedAt                                 DateTime       @updatedAt
+  accounts                                  Account[]
+  Invoice_Invoice_createdByToUser           Invoice[]      @relation("Invoice_createdByToUser")
+  Invoice_Invoice_updatedByToUser           Invoice[]      @relation("Invoice_updatedByToUser")
+  Invoice_Invoice_userIdToUser              Invoice[]      @relation("Invoice_userIdToUser")
+  Order_Order_createdByToUser               Order[]        @relation("Order_createdByToUser")
+  Order_Order_updatedByToUser               Order[]        @relation("Order_updatedByToUser")
+  Order_Order_userIdToUser                  Order[]        @relation("Order_userIdToUser")
+  OrderInvoice_OrderInvoice_createdByToUser OrderInvoice[] @relation("OrderInvoice_createdByToUser")
+  OrderInvoice_OrderInvoice_updatedByToUser OrderInvoice[] @relation("OrderInvoice_updatedByToUser")
+  OrderInvoice_OrderInvoice_userIdToUser    OrderInvoice[] @relation("OrderInvoice_userIdToUser")
+  sessions                                  Session[]
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String   @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -35,11 +44,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
 }
@@ -49,10 +56,9 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -92,6 +98,82 @@ model Section {
   medias       Media[]
 }
 
+model Invoice {
+  id                           String         @id
+  userId                       String
+  reqNo                        String         @unique @db.VarChar(10)
+  reqDatetime                  DateTime       @db.Timestamptz(0)
+  orderNo                      String
+  cusName                      String         @db.VarChar(255)
+  taxNo                        String?        @db.VarChar(20)
+  taxAddress                   String?        @db.VarChar(255)
+  email                        String?        @db.VarChar(50)
+  phone                        String?        @db.VarChar(20)
+  status                       InvoiceStatus
+  invNo                        String?        @unique @db.VarChar(50)
+  invDate                      DateTime?      @db.Date
+  repNo                        String?        @db.VarChar(50)
+  createdAt                    DateTime       @default(now()) @db.Timestamptz(0)
+  createdBy                    String?
+  updatedAt                    DateTime       @db.Timestamptz(0)
+  updatedBy                    String?
+  User_Invoice_createdByToUser User?          @relation("Invoice_createdByToUser", fields: [createdBy], references: [id])
+  User_Invoice_updatedByToUser User?          @relation("Invoice_updatedByToUser", fields: [updatedBy], references: [id])
+  User_Invoice_userIdToUser    User           @relation("Invoice_userIdToUser", fields: [userId], references: [id])
+  OrderInvoice                 OrderInvoice[]
+
+  @@index([createdBy])
+  @@index([updatedBy])
+  @@index([userId])
+}
+
+model Order {
+  id                         String         @id
+  userId                     String
+  orderNo                    String         @unique
+  datetime                   DateTime?      @db.Timestamptz(0)
+  totalAmt                   Decimal        @db.Decimal(9, 2)
+  cusName                    String         @db.VarChar(255)
+  address                    String?        @db.VarChar(255)
+  email                      String?        @db.VarChar(50)
+  phone                      String?        @db.VarChar(20)
+  status                     OrderStatus
+  createdAt                  DateTime       @default(now()) @db.Timestamptz(0)
+  createdBy                  String?
+  updatedAt                  DateTime       @db.Timestamptz(0)
+  updatedBy                  String?
+  User_Order_createdByToUser User?          @relation("Order_createdByToUser", fields: [createdBy], references: [id])
+  User_Order_updatedByToUser User?          @relation("Order_updatedByToUser", fields: [updatedBy], references: [id])
+  User_Order_userIdToUser    User           @relation("Order_userIdToUser", fields: [userId], references: [id])
+  OrderInvoice               OrderInvoice[]
+
+  @@index([createdBy])
+  @@index([updatedBy])
+  @@index([userId])
+}
+
+model OrderInvoice {
+  id                                String   @id
+  userId                            String
+  orderNo                           String
+  invNo                             String
+  createdAt                         DateTime @default(now()) @db.Timestamptz(0)
+  createdBy                         String?
+  updatedAt                         DateTime @db.Timestamptz(0)
+  updatedBy                         String?
+  User_OrderInvoice_createdByToUser User?    @relation("OrderInvoice_createdByToUser", fields: [createdBy], references: [id])
+  Invoice                           Invoice  @relation(fields: [invNo], references: [reqNo])
+  Order                             Order    @relation(fields: [orderNo], references: [orderNo])
+  User_OrderInvoice_updatedByToUser User?    @relation("OrderInvoice_updatedByToUser", fields: [updatedBy], references: [id])
+  User_OrderInvoice_userIdToUser    User     @relation("OrderInvoice_userIdToUser", fields: [userId], references: [id])
+
+  @@unique([orderNo, invNo])
+  @@index([createdBy])
+  @@index([invNo])
+  @@index([orderNo])
+  @@index([updatedBy])
+}
+
 enum MediaType {
   IMAGE
   VIDEO
@@ -118,4 +200,20 @@ enum UserRole {
 enum Currency {
   VND
   USD
+}
+
+enum InvoiceStatus {
+  Requested
+  Accepted
+  Issuing
+  Issued
+  Replaced
+  Cancelled
+}
+
+enum OrderStatus {
+  Unpaid
+  Paid
+  Cancelled
+  Refund
 }
