@@ -1,5 +1,4 @@
-import { OrderStatus } from '@prisma/client';
-import type { OrderValidationDto } from '../dtos/invoice-request.dto';
+import { Order, OrderStatus, OrderValidationDto } from '../../domain/entities/models/orders';
 
 /**
  * Service responsible for validating order data against customer input
@@ -12,13 +11,7 @@ export class OrderValidationService {
    * @returns Validation result with status and message
    */
   public validateOrderMatch(
-    orderData: {
-      cusName: string;
-      email: string | null;
-      phone: string | null;
-      status: OrderStatus;
-      orderNo: string;
-    } | null,
+    orderData: Order,
     customerData: {
       customerName: string;
       email: string;

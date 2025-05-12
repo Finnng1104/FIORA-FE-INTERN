@@ -39,13 +39,12 @@ interface Provider {
 const requestInvoiceSchema = Yup.object().shape({
   orderNo: Yup.string().required('Order number is required.'),
   customerName: Yup.string().required('Customer name is required.'),
-  taxNo: Yup.string().optional(),
-  taxAddress: Yup.string().optional(),
+  taxNo: Yup.string().required('Tax code is required.'),
+  taxAddress: Yup.string().required('Address is required.'),
   email: Yup.string().email('Invalid email address.').required('Email address is required.'),
   providerId: Yup.string().required('Provider is required.'),
   phone: Yup.string()
-    .optional()
-    .nullable()
+    .required('Phone number is required.')
     .transform((value) => (value === '' ? null : value))
     .test(
       'is-valid-phone',
@@ -74,7 +73,7 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
     },
   });
 
-  const { isSubmitting, isSuccess, handleSubmit } = useInvoiceRequest<RequestInvoiceFormValues>({
+  const { isSubmitting, handleSubmit } = useInvoiceRequest<RequestInvoiceFormValues>({
     form,
     endpoint: '/api/invoices/request',
   });
@@ -112,49 +111,38 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
   const isFormValid = form.formState.isValid;
 
   return (
-    <Card className={`max-w-3xl mx-auto shadow-sm ${className || ''}`} {...props}>
+    <Card className={`mt-5 max-w-3xl mx-auto shadow-sm ${className || ''}`} {...props}>
       <CardHeader className="text-center">
-        <CardTitle>Request Invoice</CardTitle>
+        <CardTitle className="text-xl font-bold">Request Invoice</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* First row */}
               <FormField
                 control={form.control}
-                name="customerName"
+                name="orderNo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name*</FormLabel>
+                    <FormLabel>
+                      Order code <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your name" {...field} value={field.value ?? ''} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="taxNo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tax code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter tax code" {...field} value={field.value ?? ''} />
+                      <Input placeholder="Enter order code" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Second row */}
               <FormField
                 control={form.control}
                 name="providerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Provider</FormLabel>
+                    <FormLabel>
+                      Provider <span className="text-red-500">*</span>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -177,27 +165,46 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="orderNo"
+                name="customerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Order code*</FormLabel>
+                    <FormLabel>
+                      Name <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter order code" {...field} value={field.value ?? ''} />
+                      <Input placeholder="Enter your name" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="taxNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Tax code <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter tax code" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Third row */}
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email*</FormLabel>
+                    <FormLabel>
+                      Email <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -215,7 +222,9 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
                 name="phone"
                 render={({ field: { onChange, ...field } }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>
+                      Phone number <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="0xxx xxx xxx"
@@ -240,7 +249,9 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
               name="taxAddress"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address*</FormLabel>
+                  <FormLabel>
+                    Address <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Enter your address"
@@ -257,21 +268,13 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
             <div className="flex justify-center mt-6">
               <Button
                 type="submit"
-                disabled={isSubmitting || isSuccess || !isFormValid}
-                className="w-40"
+                className="text-lg font-semibold w-48 py-6 bg-blue-500  hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                disabled={!isFormValid}
               >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span>Processing...</span>
-                  </>
-                ) : isSuccess ? (
-                  <>
-                    <Check className="mr-2 h-4 w-4" />
-                    <span>Submitted</span>
-                  </>
+                {!isSubmitting ? (
+                  <Check className="block text-green-300 stroke-[4] transform transition-transform duration-200 drop-shadow-sm hover:text-green-100 !h-[23px] !w-[23px]" />
                 ) : (
-                  <Check className="h-4 w-4" />
+                  <Loader2 className="h-full w-full text-primary animate-spin" />
                 )}
               </Button>
             </div>

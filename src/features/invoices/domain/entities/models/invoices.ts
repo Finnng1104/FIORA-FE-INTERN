@@ -83,19 +83,23 @@ export interface Order extends BaseEntity {
 export interface RequestInvoiceInput {
   orderNo: string;
   customerName: string;
-  taxNo?: string | null;
-  taxAddress?: string | null;
   email: string;
-  phone?: string | null;
+  providerId: string;
+  taxNo: string;
+  taxAddress: string;
+  phone: string;
 }
 
 /**
  * Output data structure after successfully requesting an invoice
  */
 export interface RequestInvoiceOutput {
-  invoiceId: UUID;
+  invoiceId: string;
   reqNo: string;
-  orderId: UUID;
+  orderId: string;
+  validationStatus: 'warning' | 'success';
+  validationMessage: string;
+  validationTitle?: string;
 }
 
 /**

@@ -21,10 +21,11 @@ export function useInvoiceRequest<T extends FieldValues>({
 
   const handleSubmit = async (data: T) => {
     try {
+      const formattedPhone = data.phone?.replace(/\D/g, '');
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, phone: formattedPhone }),
       });
 
       const result = await response.json();
@@ -34,6 +35,10 @@ export function useInvoiceRequest<T extends FieldValues>({
         if (response.status === 404) {
           toast.error(`Order not found`, {
             description: `${result?.message} Please check your order number and try again.`,
+          });
+
+          form.setError('orderNo' as any, {
+            message: `${result?.message}`,
           });
         } else {
           const errorData = await response.json();
