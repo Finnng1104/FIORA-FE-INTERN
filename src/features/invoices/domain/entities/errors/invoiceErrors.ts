@@ -1,17 +1,4 @@
-// Base error class for domain-specific errors
-export class DomainError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-
-// Error when an order cannot be found
-export class OrderNotFoundError extends DomainError {
-  constructor(orderNo: string) {
-    super(`Order with number ${orderNo} not found.`);
-  }
-}
+import { DomainError } from '@/shared/entities/common';
 
 // Error for authorization issues (e.g., user trying to access an order they don't own)
 export class AuthorizationError extends DomainError {
