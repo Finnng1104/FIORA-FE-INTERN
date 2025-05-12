@@ -269,7 +269,7 @@ const RequestInvoiceForm = ({ className, ...props }: React.ComponentProps<'div'>
               <Button
                 type="submit"
                 className="text-lg font-semibold w-48 py-6 bg-blue-500  hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                disabled={!isFormValid}
+                disabled={!isFormValid || isSubmitting}
               >
                 {!isSubmitting ? (
                   <Check className="block text-green-300 stroke-[4] transform transition-transform duration-200 drop-shadow-sm hover:text-green-100 !h-[23px] !w-[23px]" />
