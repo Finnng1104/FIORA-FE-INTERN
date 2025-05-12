@@ -12,4 +12,24 @@ export const navItems: NavItem[] = [
     items: [],
     module: MODULE.HOME,
   },
+  {
+    title: 'Invoices',
+    url: '/invoice-creation',
+    icon: 'dashboard',
+    isActive: false,
+    shortcut: ['i', 'v'],
+    module: MODULE.HOME,
+
+    items: [
+      {
+        title: 'filepage-invoices',
+        url: '/filepage-invoices',
+        icon: 'dashboard',
+        isActive: false,
+        shortcut: ['i', 'd'],
+        items: [],
+        module: MODULE.HOME,
+      },
+    ],
+  },
 ];

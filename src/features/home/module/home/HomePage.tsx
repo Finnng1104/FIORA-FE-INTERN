@@ -12,10 +12,10 @@ export default function HomePage() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-10">
-            {/* Left Section */}
+            {/* Left Section /}
             <div className="col-span-1 md:col-span-2 lg:col-span-7 space-y-4">Content Here</div>
 
-            {/* Right Section */}
+            {/ Right Section */}
             <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
               <Recommendations />
             </div>
