@@ -1,7 +1,7 @@
 import { MODULE } from '@/shared/constants';
 import { NavItem } from '../types/Nav.types';
 
-//Info: The following data is used for the sidebar navigation and Cmd K bar.
+//Info: Sidebar menu có phân cấp cha – con
 export const navItems: NavItem[] = [
   {
     title: 'Home',
@@ -17,8 +17,19 @@ export const navItems: NavItem[] = [
     url: '/invoice-creation',
     icon: 'dashboard',
     isActive: false,
-    shortcut: ['d', 'd'],
-    items: [],
+    shortcut: ['i', 'v'],
     module: MODULE.HOME,
+
+    items: [
+      {
+        title: 'InvoicesDetails',
+        url: '/invoice-details',
+        icon: 'dashboard',
+        isActive: false,
+        shortcut: ['i', 'd'],
+        items: [],
+        module: MODULE.HOME,
+      },
+    ],
   },
 ];
