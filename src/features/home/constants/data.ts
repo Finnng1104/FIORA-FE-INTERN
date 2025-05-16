@@ -23,10 +23,19 @@ export const navItems: NavItem[] = [
     items: [
       {
         title: 'invoice',
-        url: '/next-previous',
+        url: '/invoice-detail',
         icon: 'dashboard',
         isActive: false,
         shortcut: ['i', 'd'],
+        items: [],
+        module: MODULE.HOME,
+      },
+      {
+        title: 'invoiceNotification',
+        url: '/invoice-notification',
+        icon: 'dashboard',
+        isActive: false,
+        shortcut: ['i', 'n'],
         items: [],
         module: MODULE.HOME,
       },

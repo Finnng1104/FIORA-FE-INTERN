@@ -1,19 +1,17 @@
-export async function sendInvoiceNotification(email: string, invoiceNumber: string) {
+import { NextApiRequest, NextApiResponse } from 'next';
+import { sendInvoiceNotification } from '../application/sendInvoiceNotification';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const { orderId } = req.body;
+  if (!orderId) return res.status(400).json({ error: 'Missing orderId' });
+
   try {
-    const response = await fetch('/api/send-invoice-notification', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, invoiceNumber }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Gửi thông báo thất bại');
-    }
-
-    return await response.json();
+    await sendInvoiceNotification(orderId);
+    return res.status(200).json({ message: 'Email hóa đơn đã được gửi thành công!' });
   } catch (error: any) {
-    console.error('Lỗi khi gửi thông báo:', error);
-    throw new Error(error.message || 'Gửi thông báo thất bại');
+    console.error('Lỗi gửi mail:', error);
+    return res.status(500).json({ error: 'Lỗi gửi hóa đơn qua email' });
   }
 }
